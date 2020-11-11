@@ -397,9 +397,9 @@ static NSString *const HKPluginKeyUUID = @"UUID";
       return nil;
     }
     NSNumber* value = [self getCategoryValueByName:categoryString type:type];
-    if (value == nil && ![type.identifier isEqualToString:@"HKCategoryTypeIdentifierMindfulSession"]) {
-        *error = [NSError errorWithDomain:HKPluginError code:0 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"%@,%@,%@",@"category value is not compatible with category",type.identifier,categoryString]}];
-        return nil;
+    if (value == nil) {
+      *error = [NSError errorWithDomain:HKPluginError code:0 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"%@,%@,%@",@"category value is not compatible with category",type.identifier,categoryString]}];
+      return nil;
     }
 
     return [HKCategorySample categorySampleWithType:type value:[value integerValue] startDate:startDate endDate:endDate];
@@ -653,7 +653,6 @@ static NSString *const HKPluginKeyUUID = @"UUID";
     HKWorkoutActivityType activityTypeEnum = [WorkoutActivityConversion convertStringToHKWorkoutActivityType:activityType];
 
     BOOL requestReadPermission = (args[@"requestReadPermission"] == nil || [args[@"requestReadPermission"] boolValue]);
-    BOOL *cycling = (args[@"cycling"] == nil || [args[@"cycling"] boolValue]);
 
     // optional energy
     NSNumber *energy = args[@"energy"];
@@ -720,21 +719,11 @@ static NSString *const HKPluginKeyUUID = @"UUID";
                 if (success_save) {
                     // now store the samples, so it shows up in the health app as well (pass this in as an option?)
                     if (energy != nil || distance != nil) {
-                        HKQuantitySample *sampleActivity = nil;
-                        if(cycling != nil && cycling){
-                            sampleActivity = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
-                                            HKQuantityTypeIdentifierDistanceCycling]
-                                                                                            quantity:nrOfDistanceUnits
-                                                                                            startDate:startDate
-                                                                                                endDate:endDate];
-                        } else {      
-                            sampleActivity = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
-                                            HKQuantityTypeIdentifierDistanceWalkingRunning]
-                                                                                            quantity:nrOfDistanceUnits
-                                                                                            startDate:startDate
-                                                                                                endDate:endDate];
-
-                        }
+                        HKQuantitySample *sampleActivity = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
+                                        HKQuantityTypeIdentifierDistanceWalkingRunning]
+                                                                                           quantity:nrOfDistanceUnits
+                                                                                          startDate:startDate
+                                                                                            endDate:endDate];
                         HKQuantitySample *sampleCalories = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
                                         HKQuantityTypeIdentifierActiveEnergyBurned]
                                                                                            quantity:nrOfEnergyUnits
