@@ -719,30 +719,34 @@ static NSString *const HKPluginKeyUUID = @"UUID";
                 if (success_save) {
                     // now store the samples, so it shows up in the health app as well (pass this in as an option?)
                     if (energy != nil || distance != nil) {
-                        HKQuantitySample *sampleActivity = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
-                                        HKQuantityTypeIdentifierDistanceWalkingRunning]
-                                                                                           quantity:nrOfDistanceUnits
-                                                                                          startDate:startDate
-                                                                                            endDate:endDate];
-                        HKQuantitySample *sampleCalories = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
-                                        HKQuantityTypeIdentifierActiveEnergyBurned]
-                                                                                           quantity:nrOfEnergyUnits
-                                                                                          startDate:startDate
-                                                                                            endDate:endDate];
-                        NSArray *samples = @[sampleActivity, sampleCalories];
-
-                        [[HealthKit sharedHealthStore] addSamples:samples toWorkout:workout completion:^(BOOL success_addSamples, NSError *mostInnerError) {
-                            if (success_addSamples) {
-                                dispatch_sync(dispatch_get_main_queue(), ^{
-                                    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-                                    [bSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-                                });
-                            } else {
-                                dispatch_sync(dispatch_get_main_queue(), ^{
-                                    [HealthKit triggerErrorCallbackWithMessage:mostInnerError.localizedDescription command:command delegate:bSelf.commandDelegate];
-                                });
-                            }
-                        }];
+                        dispatch_sync(dispatch_get_main_queue(), ^{
+                            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+                            [bSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                        });
+//                        HKQuantitySample *sampleActivity = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
+//                                        HKQuantityTypeIdentifierDistanceWalkingRunning]
+//                                                                                           quantity:nrOfDistanceUnits
+//                                                                                          startDate:startDate
+//                                                                                            endDate:endDate];
+//                        HKQuantitySample *sampleCalories = [HKQuantitySample quantitySampleWithType:[HKQuantityType quantityTypeForIdentifier:
+//                                        HKQuantityTypeIdentifierActiveEnergyBurned]
+//                                                                                           quantity:nrOfEnergyUnits
+//                                                                                          startDate:startDate
+//                                                                                            endDate:endDate];
+//                        NSArray *samples = @[sampleActivity, sampleCalories];
+//
+//                        [[HealthKit sharedHealthStore] addSamples:samples toWorkout:workout completion:^(BOOL success_addSamples, NSError *mostInnerError) {
+//                            if (success_addSamples) {
+//                                dispatch_sync(dispatch_get_main_queue(), ^{
+//                                    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//                                    [bSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+//                                });
+//                            } else {
+//                                dispatch_sync(dispatch_get_main_queue(), ^{
+//                                    [HealthKit triggerErrorCallbackWithMessage:mostInnerError.localizedDescription command:command delegate:bSelf.commandDelegate];
+//                                });
+//                            }
+//                        }];
                     } else {
                       // no samples, all OK then!
                       dispatch_sync(dispatch_get_main_queue(), ^{
